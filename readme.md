@@ -12,6 +12,8 @@ creating python virtual environment
     - inside the virtual environment type "pip/pip3 install requirements.txt"
 
     - type "deactivate" to leave the virtual environment
+    
+    - also need to add additional resources folder
 
 
 
