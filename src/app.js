@@ -2,6 +2,8 @@ const path = require('path');
 const express = require('express');
 const hbs = require('hbs');
 const fileupload = require('express-fileupload');
+// const { exec } = require("child_process");
+const pycall = require('./utils/utils.js')
 
 
 
@@ -12,7 +14,7 @@ const port = process.env.PORT || 3000;
 app.use(fileupload());
 
 //define paths for express config
-const publicDirectoryPath = path.join(__dirname,'../public');
+const publicDirectoryPath = path.join(__dirname,'/../public');
 const viewsPath = path.join(__dirname,'../templates/views');
 const partialsPath = path.join(__dirname,'../templates/partials');
 
@@ -25,11 +27,14 @@ hbs.registerPartials(partialsPath);
 //setup static directory to serve
 app.use(express.static(publicDirectoryPath));
 
+
+
 const hf = {
     title:"Automated Document detection",
     name: "Aravind, Ashik, Tilak, Amith"
 
 };
+
 
 app.get('/',(req,res)=>{
     res.render('index',hf);
@@ -43,6 +48,11 @@ app.get('/help',(req,res)=>{
     res.render('help',hf)
 })
 
+app.get('/predict',async(req,res)=>{
+     await pycall();
+     res.send('ok');
+})
+
 app.get('*',(req,res) => {
     res.render('404',{
         title:'404',
@@ -52,6 +62,10 @@ app.get('*',(req,res) => {
 })
 
 app.post('/saveImage',(req,res)=>{
+
+    if (!req.files){
+        res.send("no file chosen for upload")
+    }
     if(req.files){
         console.log(req.files);
 
@@ -71,12 +85,6 @@ app.post('/saveImage',(req,res)=>{
         })
     }
 })
-
-
-
-
-
-
 
 
 app.listen(port,()=>{
