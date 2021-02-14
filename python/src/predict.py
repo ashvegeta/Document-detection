@@ -6,7 +6,7 @@ import cv2
 
 Categories = ['Aadhar','PAN']
 
-img = cv2.imread('../../uploads/example_aadhar.jpeg')
+img = cv2.imread('../../uploads/example.jpeg')
 print(img.shape)
 img2 = cv2.resize(img,(224,224))
 print(img2.shape)
@@ -21,7 +21,7 @@ def prepare(filepath):
 model = tf.keras.models.load_model('../model/model1')
 
 # print(img2.shape)
-prediction = model.predict([prepare('../../uploads/example_aadhar.jpeg')])
+prediction = model.predict([prepare('../../uploads/example.jpeg')])
 print(prediction)
 print(int(prediction[0][0]))
 print( Categories[int(prediction[0][1])] )
