@@ -44,6 +44,7 @@ def predict(filepath):
     prediction = model.predict([prepare(filepath)])
     print(prediction)
     # print(int(prediction[0][0]))
+  
     return ( Categories[int(prediction[0][1])] )
 
 
