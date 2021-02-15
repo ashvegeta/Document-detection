@@ -10,82 +10,88 @@ import numpy as np
 from glob import glob
 
 
-IMAGE_SIZE = [224, 224]
+def train_model():
 
-train_path = '../resources/train'
-test_path = '../resources/test'
+    IMAGE_SIZE = [224, 224]
 
-
-# Import the inception v3 library as shown below and add preprocessing layer to the front of VGG
-# Here we will be using imagenet weights
-
-inception = VGG16(input_shape=IMAGE_SIZE + [3], weights='imagenet', include_top=False)
+    train_path = '../resources/train'
+    test_path = '../resources/test'
 
 
+    # Import the inception v3 library as shown below and add preprocessing layer to the front of VGG
+    # Here we will be using imagenet weights
 
-# don't train existing weights
-for layer in inception.layers:
-    layer.trainable = False
-
-# useful for getting number of output classes
-folders = glob(train_path+'/*')
-print(folders)
+    inception = VGG16(input_shape=IMAGE_SIZE + [3], weights='imagenet', include_top=False)
 
 
-# our layers - you can add more if you want
-x = Flatten()(inception.output)
+
+    # don't train existing weights
+    for layer in inception.layers:
+        layer.trainable = False
+
+    # useful for getting number of output classes
+    folders = glob(train_path+'/*')
+    print(folders)
 
 
-prediction = Dense(len(folders), activation='softmax')(x)
-
-# create a model object
-model = Model(inputs=inception.input, outputs=prediction)
+    # our layers - you can add more if you want
+    x = Flatten()(inception.output)
 
 
-# view the structure of the model
-model.summary()
+    prediction = Dense(len(folders), activation='softmax')(x)
+
+    # create a model object
+    model = Model(inputs=inception.input, outputs=prediction)
 
 
-# tell the model what cost and optimization method to use
-model.compile(
-  loss='categorical_crossentropy',
-  optimizer='adam',
-  metrics=['accuracy']
-)
-
-# Use the Image Data Generator to import the images from the dataset
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
-train_datagen = ImageDataGenerator(rescale = 1./255,
-                                   shear_range = 0.2,
-                                   zoom_range = 0.2,
-                                   horizontal_flip = True)
-
-test_datagen = ImageDataGenerator(rescale = 1./255)
+    # view the structure of the model
+    model.summary()
 
 
-# Make sure you provide the same target size as initialied for the image size
-training_set = train_datagen.flow_from_directory(train_path,
-                                                 target_size = (224, 224),
-                                                 batch_size = 2,
-                                                 class_mode = 'categorical')
+    # tell the model what cost and optimization method to use
+    model.compile(
+    loss='categorical_crossentropy',
+    optimizer='adam',
+    metrics=['accuracy']
+    )
+
+    # Use the Image Data Generator to import the images from the dataset
+    from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+    train_datagen = ImageDataGenerator(rescale = 1./255,
+                                    shear_range = 0.2,
+                                    zoom_range = 0.2,
+                                    horizontal_flip = True)
+
+    test_datagen = ImageDataGenerator(rescale = 1./255)
 
 
-test_set = test_datagen.flow_from_directory(test_path,
-                                            target_size = (224, 224),
-                                            batch_size = 2,
-                                            class_mode = 'categorical')
+    # Make sure you provide the same target size as initialied for the image size
+    training_set = train_datagen.flow_from_directory(train_path,
+                                                    target_size = (224, 224),
+                                                    batch_size = 2,
+                                                    class_mode = 'categorical')
 
 
-# fit the model
-# Run the cell. It will take some time to execute
-r = model.fit(
-  training_set,
-  validation_data=test_set,
-  epochs=3,
-  steps_per_epoch=len(training_set),
-  validation_steps=len(test_set)
-)
+    test_set = test_datagen.flow_from_directory(test_path,
+                                                target_size = (224, 224),
+                                                batch_size = 2,
+                                                class_mode = 'categorical')
 
 
-model.save('../model/model1')
+    # fit the model
+    # Run the cell. It will take some time to execute
+    r = model.fit(
+    training_set,
+    validation_data=test_set,
+    epochs=3,
+    steps_per_epoch=len(training_set),
+    validation_steps=len(test_set)
+    )
+
+
+    model.save('../model/model1')
+
+
+if __name__=='__main__':
+    train_model()
