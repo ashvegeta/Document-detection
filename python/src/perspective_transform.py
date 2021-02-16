@@ -30,6 +30,10 @@ def order_points(pts):
     newpts[2] = pts[np.argmax(diff)]
     return newpts
 
+def sharpen(image):
+    blurred = cv2.GaussianBlur(image, (7, 7), 1) # the size of the kernel (7,7) can be changed as per the conditions of the image 
+    image1 = cv2.addWeighted(image, 1.0 + 2.0, blurred, -2.0, 0)
+    return image1
 
 def persp_trans(filepath):
 
@@ -56,7 +60,7 @@ def persp_trans(filepath):
     pts2 = np.float32([[0, 0], [width, 0], [0, height], [width,
                       height]])
     matrix = cv2.getPerspectiveTransform(pts1, pts2)
-    output = cv2.warpPerspective(image, matrix, (width, height))
+    output = sharpen(cv2.warpPerspective(image, matrix, (width, height)))
     outpath = '../resources/preprocessing_output/out.jpeg'
     cv2.imwrite(outpath, output)
     return outpath
